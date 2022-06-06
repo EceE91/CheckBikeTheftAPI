@@ -82,7 +82,7 @@ public class BikeTheftControllerIntegrationTests: IClassFixture<WebApplicationFa
     }
     
     [Fact]
-    public async Task SearchStolenBikes_WhenRequestIsCorrect_ReturnsOk()
+    public async Task SearchStolenBikes_WhenCityProvidedAsLocation_ReturnsOkWithStolenLocationContainsCity()
     {
         // Act
         var stolenLocationAddress = "amsterdam";
