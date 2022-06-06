@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="CheckBikeTheftAPI/Dockerfile" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
+    <deployment type="dockerfile">
+      <settings>
+        <option name="containerName" value="CheckBikeTheftContainer" />
+        <option name="sourceFilePath" value="CheckBikeTheftAPI/Dockerfile" />
+      </settings>
+    </deployment>
+    <method v="2">
+      <option name="Build" default="false" projectName="CheckBikeTheftAPI" projectPath="file://$PROJECT_DIR$/CheckBikeTheftAPI/CheckBikeTheftAPI.csproj" />
+    </method>
+  </configuration>
+</component>

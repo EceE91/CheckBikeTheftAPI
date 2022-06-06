@@ -1,0 +1,20 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=042f427e_002D63a0_002D464f_002Daf7e_002D54a606c41775/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="SearchStolenBikes_ReturnsStolenBikesInSpecifiedLocation" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;Or&gt;
+    &lt;TestAncestor&gt;
+      &lt;TestId&gt;xUnit::8D15B8FB-633E-4378-BFE4-C0517AA0A030::net6.0::CheckBikeTheftAPI.Tests.ControllerTests.BikeTheftControllerTests.SearchStolenBikes_ReturnsStolenBikesInSpecifiedLocation&lt;/TestId&gt;
+      &lt;TestId&gt;xUnit::8D15B8FB-633E-4378-BFE4-C0517AA0A030::net6.0::CheckBikeTheftAPI.Tests.ControllerTests.BikeTheftControllerTests.CalculateDistance_WhenAnExceptionOccurs_ReturnsBadRequest&lt;/TestId&gt;
+      &lt;TestId&gt;xUnit::8D15B8FB-633E-4378-BFE4-C0517AA0A030::net6.0::CheckBikeTheftAPI.Tests.ControllerTests.BikeTheftControllerTests.SearchStolenBikes_WhenLocationInfoNotProvided_ReturnsNotFound&lt;/TestId&gt;
+      &lt;TestId&gt;xUnit::8D15B8FB-633E-4378-BFE4-C0517AA0A030::net6.0::CheckBikeTheftAPI.Tests.ControllerTests.BikeTheftControllerTests.CountOfStolenBikes_ReturnsStolenBikesCountInSpecifiedLocation&lt;/TestId&gt;
+      &lt;TestId&gt;xUnit::8D15B8FB-633E-4378-BFE4-C0517AA0A030::net6.0::CheckBikeTheftAPI.Tests.ControllerTests.BikeTheftControllerTests.CountOfStolenBikes_WhenAnExceptionOccurs_ReturnsBadRequest&lt;/TestId&gt;
+      &lt;TestId&gt;xUnit::8D15B8FB-633E-4378-BFE4-C0517AA0A030::net6.0::CheckBikeTheftAPI.Tests.ControllerTests.BikeTheftControllerTests.CountOfStolenBikes_WhenLocationInfoNotProvided_ReturnsNotFound&lt;/TestId&gt;
+      &lt;TestId&gt;xUnit::8D15B8FB-633E-4378-BFE4-C0517AA0A030::net6.0::CheckBikeTheftAPI.Tests.IntegrationTests.BikeTheftControllerIntegrationTests.CalculateDistance_ReturnsDistance&lt;/TestId&gt;
+      &lt;TestId&gt;xUnit::8D15B8FB-633E-4378-BFE4-C0517AA0A030::net6.0::CheckBikeTheftAPI.Tests.IntegrationTests.BikeTheftControllerIntegrationTests.CountOfStolenBikes_WhenRequestIsInCorrect_ReturnsNotFound&lt;/TestId&gt;
+      &lt;TestId&gt;xUnit::8D15B8FB-633E-4378-BFE4-C0517AA0A030::net6.0::CheckBikeTheftAPI.Tests.IntegrationTests.BikeTheftControllerIntegrationTests.searchStolenBikes_WhenLocationIsNull_ReturnsNotFound&lt;/TestId&gt;
+      &lt;TestId&gt;xUnit::8D15B8FB-633E-4378-BFE4-C0517AA0A030::net6.0::CheckBikeTheftAPI.Tests.IntegrationTests.BikeTheftControllerIntegrationTests.CountOfStolenBikes_WhenLocationIsNull_ReturnsNotFound&lt;/TestId&gt;
+      &lt;TestId&gt;xUnit::8D15B8FB-633E-4378-BFE4-C0517AA0A030::net6.0::CheckBikeTheftAPI.Tests.IntegrationTests.BikeTheftControllerIntegrationTests.CountOfStolenBikes_WhenRequestContainsLatLon_ReturnsOk&lt;/TestId&gt;
+      &lt;TestId&gt;xUnit::8D15B8FB-633E-4378-BFE4-C0517AA0A030::net6.0::CheckBikeTheftAPI.Tests.IntegrationTests.BikeTheftControllerIntegrationTests&lt;/TestId&gt;
+    &lt;/TestAncestor&gt;
+    &lt;ProjectFile&gt;8D15B8FB-633E-4378-BFE4-C0517AA0A030/d:ControllerTests/f:BikeTheftControllerTests.cs&lt;/ProjectFile&gt;
+  &lt;/Or&gt;
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
