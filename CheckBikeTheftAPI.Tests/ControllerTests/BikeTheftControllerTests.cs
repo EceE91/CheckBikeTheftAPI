@@ -1,16 +1,22 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 using AutoFixture;
 using CheckBikeTheftAPI.CheckBikeTheftAPI.Api.Controllers;
+using CheckBikeTheftAPI.CheckBikeTheftAPI.Api.Middleware;
 using CheckBikeTheftAPI.CheckBikeTheftAPI.Api.ViewModels;
 using CheckBikeTheftAPI.CheckBikeTheftAPI.Core.Interfaces;
 using CheckBikeTheftAPI.CheckBikeTheftAPI.Core.Models;
+using CheckBikeTheftAPI.CheckBikeTheftAPI.Data.Exceptions;
 using CheckBikeTheftAPI.Tests.Helpers;
 using Moq;
 using Xunit;
 using Microsoft.Extensions.Logging;
 using FluentAssertions;
 using FluentAssertions.Execution;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -47,37 +53,29 @@ public class BikeTheftControllerTests
         using (new AssertionScope())
         {
             result.Result.Should().BeOfType<OkObjectResult>();
-            var resultValue = ((OkObjectResult)result.Result).Value;
+            var resultValue = ((OkObjectResult)result.Result!).Value;
             resultValue.Should().BeOfType<ActionResult<StolenBikeViewModel>>();
-            ((ActionResult<StolenBikeViewModel>)resultValue).Value.Bikes.Should().NotBeEmpty();
-            ((ActionResult<StolenBikeViewModel>)resultValue).Value.Bikes.Count.Should().Be(_stolenBike.Bikes.Count);
+            ((ActionResult<StolenBikeViewModel>)resultValue!).Value?.Bikes.Should().NotBeEmpty();
+            ((ActionResult<StolenBikeViewModel>)resultValue!).Value?.Bikes.Count.Should().Be(_stolenBike.Bikes.Count);
         }
-    }
-
-    [Fact]
-    public async void SearchStolenBikes_WhenAnExceptionOccurs_ReturnsBadRequest()
-    {
-        _mockRepository.Setup(x => x.GetStolenBikes(It.IsAny<Dictionary<string, string>>()))
-                       .Throws(new JsonSerializationException());
-
-        // Act
-        var result = await CreateSut().SearchStolenBikes(PrepareTestRequestForStolenBikeSearch(stolenLocationAddress: "London, UK", null));
-
-        // assert
-        result.Result.Should().BeOfType<BadRequestObjectResult>();
     }
 
     [Fact]
     public async void SearchStolenBikes_WhenLocationInfoNotProvided_ReturnsNotFound()
     {
-        // Act
-        var result = await CreateSut().SearchStolenBikes(PrepareTestRequestForStolenBikeSearch(stolenLocationAddress: null, stolenLocationLatLon: null));
-
-        // assert
-        using (new AssertionScope())
+        try
         {
-            result.Result.Should().BeOfType<NotFoundObjectResult>();
-            ((NotFoundObjectResult)result.Result).Value.Should().Be("Either StolenLocationLatLon or StolenLocationAddress must be entered");
+            // Act
+            await CreateSut().SearchStolenBikes(PrepareTestRequestForStolenBikeSearch(stolenLocationAddress: null, stolenLocationLatLon: null));
+        }
+        catch (Exception e)
+        {
+            // assert
+            using (new AssertionScope())
+            {
+                e.Should().BeOfType<LocationIsNotPresentException>();
+                e.Message.Should().Be("Either StolenLocationLatLon or StolenLocationAddress must be entered");
+            }
         }
     }
 
@@ -92,38 +90,129 @@ public class BikeTheftControllerTests
         using (new AssertionScope())
         {
             result.Result.Should().BeOfType<OkObjectResult>();
-            var resultValue = ((OkObjectResult)result.Result).Value;
+            var resultValue = ((OkObjectResult)result.Result!).Value;
             resultValue.Should().BeOfType<ActionResult<StolenBikeCountViewModel>>();
-            ((ActionResult<StolenBikeCountViewModel>)resultValue).Value.Stolen.Should().Be(_stolenBikeCount.Stolen);
-            ((ActionResult<StolenBikeCountViewModel>)resultValue).Value.Proximity.Should().Be(_stolenBikeCount.Proximity);
-            ((ActionResult<StolenBikeCountViewModel>)resultValue).Value.Non.Should().Be(_stolenBikeCount.Non);
+            ((ActionResult<StolenBikeCountViewModel>)resultValue!).Value?.Stolen.Should().Be(_stolenBikeCount.Stolen);
+            ((ActionResult<StolenBikeCountViewModel>)resultValue).Value?.Proximity.Should().Be(_stolenBikeCount.Proximity);
+            ((ActionResult<StolenBikeCountViewModel>)resultValue).Value?.Non.Should().Be(_stolenBikeCount.Non);
         }
     }
 
     [Fact]
-    public async void CountOfStolenBikes_WhenAnExceptionOccurs_ReturnsBadRequest()
+    public async Task ExceptionHandlingMiddleware_Returns500StatusCode()
     {
-        _mockRepository.Setup(x => x.GetCountOfStolenBikes(It.IsAny<Dictionary<string, string>>()))
-                       .Throws(new JsonSerializationException());
+        //arrange
+        var expectedException = new ArgumentNullException();
+        Task mockNextMiddleware(HttpContext _) => Task.FromException(expectedException);
 
-        // Act
-        var result = await CreateSut().CountOfStolenBikes(PrepareTestRequestForStolenBikeCount(stolenLocationAddress: "London, UK", null));
+        var logger = Mock.Of<ILogger<ExceptionHandlingMiddleware>>();
+        var httpContext = new DefaultHttpContext();
 
-        // assert
-        result.Result.Should().BeOfType<BadRequestObjectResult>();
+        var exceptionHandlingMiddleware = new ExceptionHandlingMiddleware(mockNextMiddleware, logger);
+
+        //act
+        await exceptionHandlingMiddleware.InvokeAsync(httpContext);
+
+        //assert
+        httpContext.Response.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
+    }
+    
+    [Fact]
+    public async Task ExceptionHandlingMiddleware_WhenLocationIsNotPresentExceptionThrown_Returns404()
+    {
+        //arrange
+        var expectedException = new LocationIsNotPresentException();
+        Task mockNextMiddleware(HttpContext _) => Task.FromException(expectedException);
+
+        var logger = Mock.Of<ILogger<ExceptionHandlingMiddleware>>();
+        var httpContext = new DefaultHttpContext();
+
+        var exceptionHandlingMiddleware = new ExceptionHandlingMiddleware(mockNextMiddleware, logger);
+
+        //act
+        await exceptionHandlingMiddleware.InvokeAsync(httpContext);
+
+        //assert
+        httpContext.Response.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
+    }
+    
+    [Fact]
+    public async Task ExceptionHandlingMiddleware_WhenLocationIsNotPresentExceptionThrown_WritesExceptionResponseJsonToBody()
+    {
+        //arrange
+        var expectedContent = "{\"Success\":false,\"Message\":\"Either StolenLocationLatLon or StolenLocationAddress must be entered\"}";
+        Task mockNextMiddleware(HttpContext _) => Task.FromException(new LocationIsNotPresentException());
+
+        var httpContext = new DefaultHttpContext
+                          {
+                              Response =
+                              {
+                                  Body = new MemoryStream()
+                              }
+                          };
+
+        var logger = Mock.Of<ILogger<ExceptionHandlingMiddleware>>();
+      
+
+        var exceptionHandlingMiddleware = new ExceptionHandlingMiddleware(mockNextMiddleware, logger);
+
+        //act
+        await exceptionHandlingMiddleware.InvokeAsync(httpContext);
+
+        httpContext.Response.Body.Position = 0;
+        string bodyContent;
+        using (var sr = new StreamReader(httpContext.Response.Body))
+            bodyContent = await sr.ReadToEndAsync();
+        
+        expectedContent.Should().BeEquivalentTo(bodyContent);
+    }
+    
+    [Fact]
+    public async Task ExceptionHandlingMiddleware_WritesExceptionResponseJsonToBody()
+    {
+        //arrange
+        var expectedContent = "{\"Success\":false,\"Message\":\"Internal Server errors. Check Logs!\"}";
+        Task mockNextMiddleware(HttpContext _) => Task.FromException(new JsonException());
+
+        var httpContext = new DefaultHttpContext
+                          {
+                              Response =
+                              {
+                                  Body = new MemoryStream()
+                              }
+                          };
+
+        var logger = Mock.Of<ILogger<ExceptionHandlingMiddleware>>();
+      
+
+        var exceptionHandlingMiddleware = new ExceptionHandlingMiddleware(mockNextMiddleware, logger);
+
+        //act
+        await exceptionHandlingMiddleware.InvokeAsync(httpContext);
+
+        httpContext.Response.Body.Position = 0;
+        string bodyContent;
+        using (var sr = new StreamReader(httpContext.Response.Body))
+            bodyContent = await sr.ReadToEndAsync();
+        
+        expectedContent.Should().BeEquivalentTo( bodyContent);
     }
 
     [Fact]
     public async void CountOfStolenBikes_WhenLocationInfoNotProvided_ReturnsNotFound()
     {
-        // Act
-        var result = await CreateSut().CountOfStolenBikes(PrepareTestRequestForStolenBikeCount(stolenLocationAddress: null, stolenLocationLatLon: null));
-
-        // assert
-        using (new AssertionScope())
+        try
         {
-            result.Result.Should().BeOfType<NotFoundObjectResult>();
-            ((NotFoundObjectResult)result.Result).Value.Should().Be("Either StolenLocationLatLon or StolenLocationAddress must be entered");
+            // Act
+            await CreateSut().CountOfStolenBikes(PrepareTestRequestForStolenBikeCount(stolenLocationAddress: null, stolenLocationLatLon: null));
+        }
+        catch (Exception e)
+        {
+            using (new AssertionScope())
+            {
+                e.Message.Should().Be("Either StolenLocationLatLon or StolenLocationAddress must be entered");
+                e.Should().BeOfType<LocationIsNotPresentException>();
+            }
         }
     }
 

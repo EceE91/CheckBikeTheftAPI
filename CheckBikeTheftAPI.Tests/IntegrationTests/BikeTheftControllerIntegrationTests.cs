@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Net;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using CheckBikeTheftAPI.Tests.Helpers;
 using FluentAssertions;
@@ -34,9 +35,9 @@ public class BikeTheftControllerIntegrationTests: IClassFixture<WebApplicationFa
         using (new AssertionScope())
         {
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            deserializedObject.Value.Non.Should().BeGreaterThan(0);
-            deserializedObject.Value.Proximity.Should().BeGreaterThan(0);
-            deserializedObject.Value.Stolen.Should().BeGreaterThan(0);
+            deserializedObject?.Value.Non.Should().BeGreaterThan(0);
+            deserializedObject?.Value.Proximity.Should().BeGreaterThan(0);
+            deserializedObject?.Value.Stolen.Should().BeGreaterThan(0);
         }
     }
     
@@ -55,9 +56,9 @@ public class BikeTheftControllerIntegrationTests: IClassFixture<WebApplicationFa
         using (new AssertionScope())
         {
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            deserializedObject.Value.Non.Should().BeGreaterThan(0);
-            deserializedObject.Value.Proximity.Should().BeGreaterThan(0);
-            deserializedObject.Value.Stolen.Should().BeGreaterThan(0);
+            deserializedObject?.Value.Non.Should().BeGreaterThan(0);
+            deserializedObject?.Value.Proximity.Should().BeGreaterThan(0);
+            deserializedObject?.Value.Stolen.Should().BeGreaterThan(0);
         }
     }
     
@@ -68,6 +69,7 @@ public class BikeTheftControllerIntegrationTests: IClassFixture<WebApplicationFa
         var response = await _factory.CreateClient().GetAsync("/countOfStolenBikes?Distance=10&Stolenness=proximity");
 
         //assert
+        response.IsSuccessStatusCode.Should().BeFalse();
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
     
@@ -78,6 +80,7 @@ public class BikeTheftControllerIntegrationTests: IClassFixture<WebApplicationFa
         var response = await _factory.CreateClient().GetAsync("/searchStolenBikes?Page=1&PerPage=25&Distance=10&Stolenness=proximity");
 
         //assert
+        response.IsSuccessStatusCode.Should().BeFalse();
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
     
@@ -97,10 +100,10 @@ public class BikeTheftControllerIntegrationTests: IClassFixture<WebApplicationFa
         using (new AssertionScope())
         {
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            deserializedObject.Value.Bikes.Count.Should().BeGreaterThan(0);
-            deserializedObject.Value.Bikes.Where(x=>x.StolenLocation != null)
-                              .Select(x=> x.StolenLocation?.ToLower())
-                              .Should().Match(p=>p.Contains("nl") || p.Contains(stolenLocationAddress));
+            deserializedObject?.Value.Bikes.Count.Should().BeGreaterThan(0);
+            deserializedObject?.Value.Bikes.Where(x=>x.StolenLocation != null)
+                               .Select(x=> x.StolenLocation?.ToLower())
+                               .Should().Match(p=>p.Contains("nl") || p.Contains(stolenLocationAddress));
         }
     }
 }

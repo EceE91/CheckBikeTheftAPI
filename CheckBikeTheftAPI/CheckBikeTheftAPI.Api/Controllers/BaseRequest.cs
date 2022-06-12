@@ -27,7 +27,7 @@ public class BaseRequest
     {
         // use lat lon as primary search param
         return (StolenLocationLatLon == null && StolenLocationAddress == null)
-                           ? throw new LocationIsNotPresentException("Either StolenLocationLatLon or StolenLocationAddress must be entered")
+                           ? throw new LocationIsNotPresentException()
                            : StolenLocationLatLon != null
                                ? new StringBuilder().Append(StolenLocationLatLon.Latitude).Append(",").Append(StolenLocationLatLon.Longitude).ToString()
                                : StolenLocationAddress;

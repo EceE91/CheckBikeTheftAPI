@@ -24,12 +24,10 @@ public class BikeTheftController: ControllerBase
     [ApiVersion("1.0")]
     [HttpGet("/SearchStolenBikes")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(StolenBikeViewModel))]
-    [SwaggerResponse(StatusCodes.Status404NotFound, type: typeof(ErrorViewModel))]
-    [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorViewModel))]
+    [SwaggerResponse(StatusCodes.Status404NotFound)]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<StolenBikeViewModel>> SearchStolenBikes([FromQuery] BikeTheftSearchRequest bikeTheftSearchRequest)
     {
-        try
-        {
             var queryParams = bikeTheftSearchRequest.ToBikeTheftParameters();
             var bikeThefts = await _stolenBikeRepository.GetStolenBikes(queryParams);
 
@@ -43,17 +41,6 @@ public class BikeTheftController: ControllerBase
                     }
                 )
             );
-        }
-        catch (LocationIsNotPresentException e)
-        {
-            _logger.LogError(e.Message);
-            return NotFound(e.Message);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e.Message);
-            return BadRequest(e.Message);
-        }
     }
 
     private List<BikeViewModel> MapToBikeViewModel(List<Bike> bikes)
@@ -95,12 +82,10 @@ public class BikeTheftController: ControllerBase
     [ApiVersion("1.0")]
     [HttpGet("/CountOfStolenBikes")]
     [SwaggerResponse(StatusCodes.Status200OK, type: typeof(StolenBikeCountViewModel))]
-    [SwaggerResponse(StatusCodes.Status404NotFound, type: typeof(ErrorViewModel))]
-    [SwaggerResponse(StatusCodes.Status500InternalServerError, type: typeof(ErrorViewModel))]
+    [SwaggerResponse(StatusCodes.Status404NotFound)]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<StolenBikeCountViewModel>> CountOfStolenBikes([FromQuery] BikeTheftCountRequest bikeTheftCountRequest)
     {
-        try
-        {
             var queryParams = bikeTheftCountRequest.ToBikeTheftCountParameters();
             var bikeTheftCount = await _stolenBikeRepository.GetCountOfStolenBikes(queryParams);
 
@@ -116,16 +101,6 @@ public class BikeTheftController: ControllerBase
                     }
                 )
             );
-        }
-        catch (LocationIsNotPresentException e)
-        {
-            _logger.LogError(e.Message);
-            return NotFound(e.Message);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e.Message);
-            return BadRequest(e.Message);
-        }
+        
     }
 }

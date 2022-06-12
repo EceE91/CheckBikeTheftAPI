@@ -1,3 +1,4 @@
+using CheckBikeTheftAPI.CheckBikeTheftAPI.Api.Middleware;
 using CheckBikeTheftAPI.CheckBikeTheftAPI.Core.Interfaces;
 using CheckBikeTheftAPI.CheckBikeTheftAPI.Data.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -47,6 +48,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.MapControllers();
 
