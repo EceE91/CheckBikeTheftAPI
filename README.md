@@ -2,7 +2,7 @@
 
 The project structure is described below:
 CheckBikeTheftAPI
-  - CheckBikeTheftAPI.Api (Contains controllers, ViewModels, StartUp)
+  - CheckBikeTheftAPI.Api (Contains controllers, ViewModels, StartUp, Middleware)
   - CheckBikeTheftAPI.Core (Contains Models and Interfaces and reposity)
   - CheckBikeTheftAPI.Data (Contains repository and service implementations)
 CheckBikeTheftAPI.Tests
