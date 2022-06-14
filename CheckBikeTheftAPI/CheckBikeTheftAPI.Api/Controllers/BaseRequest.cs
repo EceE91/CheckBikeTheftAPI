@@ -23,14 +23,19 @@ public class BaseRequest
     [DefaultValue("proximity")]
     public Stolenness Stolenness { get; set; } = Stolenness.proximity;
 
-    protected string ToLocationString()
+    protected string? ToLocationString()
     {
-        // use lat lon as primary search param
-        return (StolenLocationLatLon == null && StolenLocationAddress == null)
-                           ? throw new LocationIsNotPresentException()
-                           : StolenLocationLatLon != null
-                               ? new StringBuilder().Append(StolenLocationLatLon.Latitude).Append(",").Append(StolenLocationLatLon.Longitude).ToString()
-                               : StolenLocationAddress;
+        if (Stolenness == Stolenness.proximity)
+        {
+            // use lat lon as primary search param
+            return (StolenLocationLatLon == null && StolenLocationAddress == null
+                        ? throw new LocationIsNotPresentException()
+                        : StolenLocationLatLon != null
+                            ? new StringBuilder().Append(StolenLocationLatLon.Latitude).Append(",").Append(StolenLocationLatLon.Longitude).ToString()
+                            : StolenLocationAddress)!;
+        }
+
+        return null;
     }
 }
 

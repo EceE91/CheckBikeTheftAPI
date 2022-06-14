@@ -15,15 +15,15 @@ public class BikeTheftSearchRequest: BaseRequest
     [DefaultValue(25)]
     public int PerPage { get; set; } = 25;
 
-    public Dictionary<string, string> ToBikeTheftParameters()
+    public Dictionary<string, string?> ToBikeTheftParameters()
     {
-        return new Dictionary<string, string>
+        return new Dictionary<string, string?>
                {
-                   ["page"] = Page.ToString(),
-                   ["per_page"] = PerPage.ToString(),
-                   ["distance"] = Distance.ToString(),
-                   ["stolenness"] = Stolenness.ToString(),
-                   ["location"] = ToLocationString()
-               };
+                                     ["page"] = Page.ToString(),
+                                     ["per_page"] = PerPage.ToString(),
+                                     ["distance"] = Distance.ToString(),
+                                     ["stolenness"] = Stolenness.ToString(),
+                                     ["location"] = ToLocationString()
+                                 };
     }
 }

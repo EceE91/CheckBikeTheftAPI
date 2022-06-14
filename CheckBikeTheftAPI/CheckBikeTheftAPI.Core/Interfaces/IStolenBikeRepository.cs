@@ -8,11 +8,11 @@ public interface IStolenBikeRepository
     /// Fetches stolen bikes of a given location
     /// </summary>
     /// <returns></returns>
-    Task<StolenBike> GetStolenBikes(Dictionary<string,string> bikeTheftSearchParameters);
+    Task<StolenBike> GetStolenBikes(Dictionary<string, string?> bikeTheftSearchParameters);
     
     /// <summary>
     /// Fetches count of stolen bikes of a given location
     /// </summary>
     /// <returns></returns>
-    Task<StolenBikeCount> GetCountOfStolenBikes(Dictionary<string,string> bikeTheftCountParameters);
+    Task<StolenBikeCount> GetCountOfStolenBikes(Dictionary<string, string?> bikeTheftCountParameters);
 }

@@ -17,7 +17,7 @@ public class StolenBikeRepository: IStolenBikeRepository
         _httpClientFactory = httpClientFactory;
     }
     
-    public async Task<StolenBike> GetStolenBikes(Dictionary<string,string> bikeTheftSearchParameters)
+    public async Task<StolenBike> GetStolenBikes(Dictionary<string, string?> bikeTheftSearchParameters)
     {
         StolenBike stolenBike;
         var httpClient = _httpClientFactory.CreateClient();
@@ -37,7 +37,7 @@ public class StolenBikeRepository: IStolenBikeRepository
         return stolenBike;
     }
     
-    public async Task<StolenBikeCount> GetCountOfStolenBikes(Dictionary<string,string> bikeTheftCountParameters)
+    public async Task<StolenBikeCount> GetCountOfStolenBikes(Dictionary<string, string?> bikeTheftCountParameters)
     {
         StolenBikeCount stolenBikeCount;
         var httpClient = _httpClientFactory.CreateClient();
